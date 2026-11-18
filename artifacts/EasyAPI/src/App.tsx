@@ -1517,6 +1517,9 @@ const doLogout = () => {
 function Landing() {
   const { authed, theme, setTheme } = useAuth();
 const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    fetch(`${API}/api/public-status`).catch(() => {});
+  }, []);
 useEffect(() => {
   if (!menuOpen) return;
   const close = (e: MouseEvent | TouchEvent) => {
@@ -1805,6 +1808,9 @@ function AuthPage({ mode }: { mode: 'login' | 'register' | 'forgot' | 'reset' })
   const [step, setStep] = useState<'otp' | 'password'>('otp');
   const [resetToken, setResetToken] = useState('');
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
+    useEffect(() => {
+    fetch(`${API}/api/public-status`).catch(() => {});
+  }, []);
   useEffect(() => {
   const updateGoogleWidth = () => {
     const submitButton = document.querySelector(
