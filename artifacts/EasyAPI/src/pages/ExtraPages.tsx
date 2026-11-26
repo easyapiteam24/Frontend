@@ -1960,6 +1960,12 @@ const send = async () => {
   setResponse(null);
   const start = Date.now();
   const MIN_DELAY = 2000;
+  const pushHistory = () => {
+  const entry = `${method} ${raw}`;
+  const next = [entry, ...history.filter((h) => h !== entry)].slice(0, 8);
+  setHistory(next);
+  localStorage.setItem('sp_tester_history', JSON.stringify(next));
+};
   try {
     const requestHeaders: Record<string, string> = {};
     headers.forEach((h) => {
@@ -1986,9 +1992,7 @@ const send = async () => {
       status: res.status,
       duration: Date.now() - start,
     });
-    const next = [`${method} ${raw}`, ...history].slice(0, 8);
-    setHistory(next);
-    localStorage.setItem('sp_tester_history', JSON.stringify(next));
+  pushHistory();
   } catch (e) {
     const ex = e as any;
     setElapsed(Date.now() - start);
@@ -1998,6 +2002,7 @@ const send = async () => {
       status: ex.response?.status || 0,
       duration: Date.now() - start,
     });
+    pushHistory();
     setError(
       ex.response
         ? `Request failed with status ${ex.response.status}.`
