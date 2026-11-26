@@ -861,6 +861,10 @@ html.light .count-badge {
   white-space: nowrap;
   cursor: pointer;
 }
+.loading-state,
+.response-placeholder {
+  font-size: var(--t-sm) !important;
+}
 .view-pill-avatar {
   width: 20px;
   height: 20px;
