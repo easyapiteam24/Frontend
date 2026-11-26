@@ -1940,62 +1940,76 @@ function WinLoader({ color, size }: { color?: string; size?: number }) {
       [history, setHistory] = useState<string[]>(() =>
         JSON.parse(localStorage.getItem('sp_tester_history') || '[]'),
       );
-    const send = async () => {
-      setLoading(true);
-      setError('');
-      setResponse(null);
-         const start = Date.now();
-    const MIN_DELAY = 2000;
-    try {
-      const requestHeaders: Record<string, string> = {};
-        headers.forEach((h) => {
-          if (h.key) requestHeaders[h.key] = h.value;
-        });
-        if (auth === 'Bearer token' && token) requestHeaders.Authorization = `Bearer ${token}`;
-        const query = new URLSearchParams();
-        params.forEach((p) => {
-          if (p.key) query.set(p.key, p.value);
-        });
-        const target = url + (query.size ? (url.includes('?') ? '&' : '?') + query.toString() : '');
-        const res = await axios({
-          url: target,
-          method: method.toLowerCase(),
-          headers: requestHeaders,
-          data: ['POST', 'PUT', 'PATCH'].includes(method) ? body : undefined,
-          timeout: 15000,
-        });
-      setResponse(res);
-      setElapsed(Date.now() - start);
-      addRequest({
-        method,
-        path: target,
-        status: res.status,
-        duration: Date.now() - start,
-      });
-      const next = [`${method} ${url}`, ...history].slice(0, 8);
-        setHistory(next);
-        localStorage.setItem('sp_tester_history', JSON.stringify(next));
-         } catch (e) {
-      const ex = e as any;
-      setElapsed(Date.now() - start);
-      addRequest({
-        method,
-        path: url,
-        status: ex.response?.status || 0,
-        duration: Date.now() - start,
-      });
-        setError(
-          ex.response
-            ? `Request failed with status ${ex.response.status}.`
-            : 'Network or CORS error. The destination may not allow browser requests. Check the URL and Access-Control-Allow-Origin policy.',
-        );
-        if (ex.response) setResponse(ex.response);
-          } finally {
-      const remaining = MIN_DELAY - (Date.now() - start);
-      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
-      setLoading(false);
-    }
-    };
+const send = async () => {
+  const raw = url.trim();
+  let valid = true;
+  try {
+    const u = new URL(raw);
+    valid = u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    valid = false;
+  }
+  if (!valid) {
+    setResponse(null);
+    setError('Enter a full URL starting with http:// or https://');
+    return;
+  }
+
+  setLoading(true);
+  setError('');
+  setResponse(null);
+  const start = Date.now();
+  const MIN_DELAY = 2000;
+  try {
+    const requestHeaders: Record<string, string> = {};
+    headers.forEach((h) => {
+      if (h.key) requestHeaders[h.key] = h.value;
+    });
+    if (auth === 'Bearer token' && token) requestHeaders.Authorization = `Bearer ${token}`;
+    const query = new URLSearchParams();
+    params.forEach((p) => {
+      if (p.key) query.set(p.key, p.value);
+    });
+    const target = raw + (query.size ? (raw.includes('?') ? '&' : '?') + query.toString() : '');
+    const res = await axios({
+      url: target,
+      method: method.toLowerCase(),
+      headers: requestHeaders,
+      data: ['POST', 'PUT', 'PATCH'].includes(method) ? body : undefined,
+      timeout: 15000,
+    });
+    setResponse(res);
+    setElapsed(Date.now() - start);
+    addRequest({
+      method,
+      path: target,
+      status: res.status,
+      duration: Date.now() - start,
+    });
+    const next = [`${method} ${raw}`, ...history].slice(0, 8);
+    setHistory(next);
+    localStorage.setItem('sp_tester_history', JSON.stringify(next));
+  } catch (e) {
+    const ex = e as any;
+    setElapsed(Date.now() - start);
+    addRequest({
+      method,
+      path: raw,
+      status: ex.response?.status || 0,
+      duration: Date.now() - start,
+    });
+    setError(
+      ex.response
+        ? `Request failed with status ${ex.response.status}.`
+        : 'Network or CORS error. The destination may not allow browser requests. Check the URL and Access-Control-Allow-Origin policy.',
+    );
+    if (ex.response) setResponse(ex.response);
+  } finally {
+    const remaining = MIN_DELAY - (Date.now() - start);
+    if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+    setLoading(false);
+  }
+};
     const snippet = `curl -X ${method} '${url}' \\\n  -H 'Accept: application/json'`;
     return (
       <>
