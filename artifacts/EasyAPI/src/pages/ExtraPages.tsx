@@ -2009,8 +2009,9 @@ function WinLoader({ color, size }: { color?: string; size?: number }) {
           <div className="tester-main">
             <Card className="request-card">
               <div className="request-line">
-              <Dropdown className="dd-method" ariaLabel="Request method" value={method}
-  onChange={setMethod} options={['GET', 'POST', 'PUT', 'PATCH', 'DELETE']} />
+           <Dropdown className="dd-method" ariaLabel="Request method" value={method}
+  onChange={(v) => { console.log('picked:', v); setMethod(String(v)); }}
+  options={['GET', 'POST', 'PUT', 'PATCH', 'DELETE']} />
                 <input
                   className="request-url mono"
                   value={url}
