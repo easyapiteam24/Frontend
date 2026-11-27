@@ -1854,7 +1854,53 @@ html body .app-footer,
 html body .app-footer span {
   font-size: 14px !important;
 }
+/* ===== Needs attention: alert rows (PC default) ===== */
+.alerts-card .alert-row {
+  gap: 14px !important;
+  padding: 16px 0 !important;
+}
+.alerts-card .alert-row b {
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere;
+}
+.alerts-card .alert-row p {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin: 4px 0 0 !important;
+}
+.alerts-card .alert-row > svg {
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0;
+}
+.alerts-card .alert-marker {
+  width: 10px !important;
+  height: 10px !important;
+  flex-shrink: 0;
+}
 
+/* ===== Android / mobile ===== */
+@media (max-width: 640px) {
+  .alerts-card .alert-row {
+    gap: 12px !important;
+    padding: 14px 0 !important;
+  }
+  .alerts-card .alert-row b {
+    font-size: 15px !important;
+  }
+  .alerts-card .alert-row p {
+    font-size: 13px !important;
+  }
+  .alerts-card .alert-row > svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .alerts-card .alert-marker {
+    width: 9px !important;
+    height: 9px !important;
+  }
+}
 /* ===== Mobile (Android) ===== */
 @media (max-width: 640px) {
   html body .bottom-callout b { font-size: 15px !important; }
